@@ -1,0 +1,94 @@
+# tierlane configuration.
+#
+# Copy this to `tierlane.toml` in your project, then delete the tiers you do not
+# have installed. Tiers are ordered by cost: level 0 should be the cheapest
+# thing you own, and the numbers climb from there.
+
+[defaults]
+# --files may only read from these directories. Keep this narrow.
+read_roots = ["."]
+# Upper bound on how much file text is packed into one prompt.
+max_context_chars = 12000
+# Per-tier timeout, in seconds.
+timeout = 300
+# With --escalate, a result shorter than this counts as inadequate and steps up
+# a tier. Lower it for tasks whose correct answer is genuinely short.
+min_output_chars = 50
+
+
+# ─── Tiers ────────────────────────────────────────────────────────────────
+# kind = "http" calls an OpenAI-compatible /chat/completions endpoint.
+# kind = "cli"  runs a subprocess. Use {prompt} to place the task on the
+#               command line; leave it out and the prompt arrives on stdin.
+# cloud = true  marks a tier as off-machine, which makes --files require
+#               explicit --allow-cloud consent.
+
+[[tier]]
+level = 0
+name = "ollama"
+description = "Local model. Free, private, slower."
+kind = "http"
+endpoint = "http://127.0.0.1:11434/v1/chat/completions"
+model = "qwen2.5-coder:7b"
+cloud = false
+
+[[tier]]
+level = 1
+name = "gemini-flash"
+description = "Fast and cheap. Good for summarising and lookup."
+kind = "cli"
+command = ["gemini", "-p", "{prompt}"]
+cloud = true
+
+[[tier]]
+level = 2
+name = "claude-haiku"
+description = "Reviews and quality checks."
+kind = "cli"
+command = ["claude", "-p", "{prompt}", "--model", "haiku", "--output-format", "text"]
+cloud = true
+
+[[tier]]
+level = 3
+name = "codex"
+description = "Bug hunting and dependency analysis, sandboxed read-only."
+kind = "cli"
+command = ["codex", "exec", "{prompt}", "-s", "read-only"]
+cloud = true
+
+
+# ─── Routing rules ────────────────────────────────────────────────────────
+# Substring match against the lowered task text. When several rules match, the
+# highest tier among them wins. Unmatched tasks go to the cheapest tier.
+
+[[rule]]
+tier = 0
+keywords = ["draft", "translate", "template", "format", "rename", "docstring"]
+
+[[rule]]
+tier = 1
+keywords = ["summarize", "summarise", "research", "compare", "list", "explain"]
+
+[[rule]]
+tier = 2
+keywords = ["review", "critique", "refactor", "test plan", "design"]
+
+[[rule]]
+tier = 3
+keywords = ["bug", "debug", "dependency", "root cause", "regression"]
+
+
+# ─── Never delegate ───────────────────────────────────────────────────────
+# Tasks matching these are refused outright. The point is that some work should
+# not be handed to a subprocess whose output you might paste back unread.
+
+[hold]
+keywords = [
+  "deploy",
+  "delete",
+  "drop table",
+  "force push",
+  "rotate key",
+  "credential",
+  "production",
+]

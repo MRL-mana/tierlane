@@ -1,0 +1,16 @@
+# Your own config — it names local paths and models. Ship the example instead.
+tierlane.toml
+
+# Scratch files used while testing the guards.
+sample/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+venv/
+.env
+.DS_Store
