@@ -34,10 +34,16 @@ tierlaneは、その2つを実行前に判断します。
 ## インストール
 
 ```bash
+pip install https://github.com/MRL-mana/tierlane/releases/download/v0.2.0/tierlane-0.2.0-py3-none-any.whl
+```
+
+この方法はGit本体を必要としません。タグ付きソースから導入する場合:
+
+```bash
 pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
 ```
 
-現在PyPIには未公開です。上記はGitHubの公開版v0.2.0を直接導入します。
+現在PyPIには未公開です。どちらもGitHubの公開版v0.2.0を導入します。
 
 開発する場合:
 

@@ -38,6 +38,12 @@ tierlane puts a decision in front of both.
 ## Install
 
 ```bash
+pip install https://github.com/MRL-mana/tierlane/releases/download/v0.2.0/tierlane-0.2.0-py3-none-any.whl
+```
+
+This wheel install does not require Git. To install from the tagged source instead:
+
+```bash
 pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
 ```
 
@@ -49,7 +55,7 @@ cd tierlane
 pip install -e .
 ```
 
-The package is not on PyPI yet. The GitHub install above uses the current
+The package is not on PyPI yet. Both GitHub installs above use the current
 public release directly.
 
 ## 60-second start
