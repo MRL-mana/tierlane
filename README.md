@@ -38,7 +38,7 @@ tierlane puts a decision in front of both.
 ## Install
 
 ```bash
-pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.1.0"
+pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
 ```
 
 Or clone it for development:
@@ -55,10 +55,11 @@ public release directly.
 ## 60-second start
 
 ```bash
-cp tierlane.example.toml tierlane.toml
+tierlane init
 ```
 
-Open it and delete the tiers you do not have installed. Then check what would
+This creates `tierlane.toml` without overwriting an existing file. Open it and
+delete the tiers you do not have installed. Then check what would
 happen before anything runs:
 
 ```console

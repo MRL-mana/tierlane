@@ -34,10 +34,10 @@ tierlaneは、その2つを実行前に判断します。
 ## インストール
 
 ```bash
-pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.1.0"
+pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
 ```
 
-現在PyPIには未公開です。上記はGitHubの公開版v0.1.0を直接導入します。
+現在PyPIには未公開です。上記はGitHubの公開版v0.2.0を直接導入します。
 
 開発する場合:
 
@@ -50,13 +50,13 @@ pytest
 
 ## 60秒で試す
 
-設定例をコピーします。
+設定ファイルを生成します。
 
 ```bash
-cp tierlane.example.toml tierlane.toml
+tierlane init
 ```
 
-使用していないAIの設定を削除し、まず実行せずに振り分け結果だけ確認します。
+既存の `tierlane.toml` は上書きしません。使用していないAIの設定を削除し、まず実行せずに振り分け結果だけ確認します。
 
 ```bash
 tierlane "このファイルの変更点を要約して" --dry-run

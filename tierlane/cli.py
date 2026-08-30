@@ -6,7 +6,10 @@ import argparse
 import asyncio
 import json
 import sys
+from importlib import resources
+from pathlib import Path
 
+from . import __version__
 from .config import Config, ConfigError, load_config
 from .guards import (
     CloudEgressBlocked,
@@ -25,6 +28,38 @@ HOLD_MESSAGE = (
 )
 
 
+def build_init_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="tierlane init",
+        description="Create a safe starter tierlane.toml in the current directory.",
+    )
+    parser.add_argument(
+        "--output",
+        default="tierlane.toml",
+        help="Where to write the config (default: ./tierlane.toml).",
+    )
+    return parser
+
+
+def _init_config(args: argparse.Namespace) -> int:
+    target = Path(args.output).expanduser()
+    if target.exists():
+        print(
+            f"[tierlane] refused: {target} already exists; no file was changed.",
+            file=sys.stderr,
+        )
+        return 3
+
+    template = resources.files("tierlane").joinpath("default_config.toml").read_text(
+        encoding="utf-8"
+    )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(template, encoding="utf-8")
+    print(f"[tierlane] created {target}")
+    print("Edit the tiers you have installed, then run a task with --dry-run first.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="tierlane",
@@ -32,7 +67,9 @@ def build_parser() -> argparse.ArgumentParser:
             "Route a task to the cheapest AI CLI that can handle it, and keep "
             "your files off third-party clouds unless you say otherwise."
         ),
+        epilog="First time here? Run `tierlane init` to create a starter config.",
     )
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("task", help="What you want done.")
     parser.add_argument(
         "--tier", type=int, default=None,
@@ -160,7 +197,11 @@ async def _main_async(args: argparse.Namespace, config: Config) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    raw_args = list(sys.argv[1:] if argv is None else argv)
+    if raw_args and raw_args[0] == "init":
+        return _init_config(build_init_parser().parse_args(raw_args[1:]))
+
+    args = build_parser().parse_args(raw_args)
 
     try:
         config = load_config(args.config)

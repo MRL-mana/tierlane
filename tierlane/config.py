@@ -138,7 +138,7 @@ def load_config(path: str | Path | None = None) -> Config:
     if resolved is None:
         raise ConfigError(
             f"No {CONFIG_FILENAME} found. Create one in this directory "
-            f"(see tierlane.example.toml) or set TIERLANE_CONFIG."
+            f"with `tierlane init`, or set TIERLANE_CONFIG."
         )
     if not resolved.is_file():
         raise ConfigError(f"Config file not found: {resolved}")
