@@ -1,5 +1,9 @@
 # tierlane
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Tests](https://github.com/MRL-mana/tierlane/actions/workflows/test.yml/badge.svg)](https://github.com/MRL-mana/tierlane/actions/workflows/test.yml)
+
 Route AI tasks to the cheapest CLI that can handle them — and keep your source
 files off third-party clouds unless you explicitly say otherwise.
 
@@ -32,16 +36,19 @@ tierlane puts a decision in front of both.
 ## Install
 
 ```bash
-pip install tierlane
+pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.1.0"
 ```
 
-Or from source:
+Or clone it for development:
 
 ```bash
 git clone https://github.com/MRL-mana/tierlane
 cd tierlane
 pip install -e .
 ```
+
+The package is not on PyPI yet. The GitHub install above uses the current
+public release directly.
 
 ## 60-second start
 
