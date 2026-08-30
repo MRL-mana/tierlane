@@ -1,6 +1,7 @@
 # tierlane configuration.
 #
-# Copy this to `tierlane.toml` in your project, then delete the tiers you do not
+# Run `tierlane init` after installation. When working from this source tree,
+# you may instead copy this file to `tierlane.toml`. Delete tiers you do not
 # have installed. Tiers are ordered by cost: level 0 should be the cheapest
 # thing you own, and the numbers climb from there.
 
