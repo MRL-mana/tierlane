@@ -34,16 +34,16 @@ tierlaneは、その2つを実行前に判断します。
 ## インストール
 
 ```bash
-pip install https://github.com/MRL-mana/tierlane/releases/download/v0.2.0/tierlane-0.2.0-py3-none-any.whl
+pip install https://github.com/MRL-mana/tierlane/releases/download/v0.3.0/tierlane-0.3.0-py3-none-any.whl
 ```
 
 この方法はGit本体を必要としません。タグ付きソースから導入する場合:
 
 ```bash
-pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
+pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.3.0"
 ```
 
-現在PyPIには未公開です。どちらもGitHubの公開版v0.2.0を導入します。
+現在PyPIには未公開です。どちらもGitHubの公開版v0.3.0を導入します。
 
 開発する場合:
 
@@ -63,6 +63,12 @@ tierlane init
 ```
 
 既存の `tierlane.toml` は上書きしません。使用していないAIの設定を削除し、まず実行せずに振り分け結果だけ確認します。
+
+```bash
+tierlane doctor
+```
+
+`doctor` はAIを呼び出さず、設定とCLIコマンドの有無を確認します。HTTP接続先は設定済みとして表示しますが、通信は行いません。その後、振り分け結果を確認します。
 
 ```bash
 tierlane "このファイルの変更点を要約して" --dry-run

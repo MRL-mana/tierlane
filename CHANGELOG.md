@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-08-30
+
+- Add `tierlane doctor` to inspect config, local/cloud labels, and CLI availability without calling any backend.
+- Add JSON doctor output for scripts and CI checks.
+
 ## 0.2.0 - 2026-08-30
 
 - Add `tierlane init` to create a valid starter configuration after installation.

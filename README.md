@@ -38,13 +38,13 @@ tierlane puts a decision in front of both.
 ## Install
 
 ```bash
-pip install https://github.com/MRL-mana/tierlane/releases/download/v0.2.0/tierlane-0.2.0-py3-none-any.whl
+pip install https://github.com/MRL-mana/tierlane/releases/download/v0.3.0/tierlane-0.3.0-py3-none-any.whl
 ```
 
 This wheel install does not require Git. To install from the tagged source instead:
 
 ```bash
-pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.2.0"
+pip install "tierlane @ git+https://github.com/MRL-mana/tierlane.git@v0.3.0"
 ```
 
 Or clone it for development:
@@ -67,6 +67,14 @@ tierlane init
 This creates `tierlane.toml` without overwriting an existing file. Open it and
 delete the tiers you do not have installed. Then check what would
 happen before anything runs:
+
+```bash
+tierlane doctor
+```
+
+`doctor` checks the config and CLI commands without calling an AI. HTTP
+endpoints are reported as configured but are not contacted. Then inspect a
+routing decision:
 
 ```console
 $ tierlane "summarize the changes in this file" --dry-run

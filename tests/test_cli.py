@@ -10,7 +10,7 @@ from tierlane import __version__
 
 
 def test_package_version_matches_release():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.3.0"
 
 
 def test_version_flag_reports_the_release(capsys):
@@ -18,7 +18,7 @@ def test_version_flag_reports_the_release(capsys):
         main(["--version"])
 
     assert exc.value.code == 0
-    assert capsys.readouterr().out.strip() == "tierlane 0.2.0"
+    assert capsys.readouterr().out.strip() == "tierlane 0.3.0"
 
 
 def test_init_creates_a_valid_config(tmp_path, monkeypatch, capsys):
@@ -53,3 +53,47 @@ def test_init_can_write_to_an_explicit_nested_path(tmp_path):
 
     assert target.is_file()
     assert load_config(target).levels == [0, 1, 2, 3]
+
+
+def test_doctor_reports_missing_commands_without_calling_them(tmp_path, capsys):
+    config = tmp_path / "tierlane.toml"
+    config.write_text(
+        """
+[[tier]]
+level = 0
+name = "local-http"
+kind = "http"
+endpoint = "http://127.0.0.1:9999/v1/chat/completions"
+cloud = false
+
+[[tier]]
+level = 1
+name = "missing-cli"
+kind = "cli"
+command = ["__tierlane_command_that_does_not_exist__"]
+cloud = true
+""".strip(),
+        encoding="utf-8",
+    )
+
+    assert main(["doctor", "--config", str(config)]) == 0
+
+    output = capsys.readouterr().out
+    assert "[configured] tier 0 local-http" in output
+    assert "[missing] tier 1 missing-cli" in output
+    assert "No backend was called." in output
+
+
+def test_doctor_json_is_machine_readable(tmp_path, capsys):
+    target = tmp_path / "tierlane.toml"
+    assert main(["init", "--output", str(target)]) == 0
+    capsys.readouterr()
+
+    assert main(["doctor", "--config", str(target), "--json"]) == 0
+
+    import json
+
+    report = json.loads(capsys.readouterr().out)
+    assert report["mode"] == "doctor"
+    assert report["called_backends"] is False
+    assert len(report["tiers"]) == 4

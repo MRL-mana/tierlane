@@ -41,6 +41,16 @@ def build_init_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def build_doctor_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="tierlane doctor",
+        description="Inspect the config and backend commands without calling an AI.",
+    )
+    parser.add_argument("--config", default=None, help="Path to tierlane.toml.")
+    parser.add_argument("--json", action="store_true", help="Emit the report as JSON.")
+    return parser
+
+
 def _init_config(args: argparse.Namespace) -> int:
     target = Path(args.output).expanduser()
     if target.exists():
@@ -57,6 +67,54 @@ def _init_config(args: argparse.Namespace) -> int:
     target.write_text(template, encoding="utf-8")
     print(f"[tierlane] created {target}")
     print("Edit the tiers you have installed, then run a task with --dry-run first.")
+    return 0
+
+
+def _doctor(config: Config, as_json: bool) -> int:
+    tiers = []
+    for level in config.levels:
+        tier = config.tier(level)
+        if tier.kind == "http":
+            status = "configured"
+            detail = "endpoint configured; connectivity not probed"
+        elif tier.available:
+            status = "available"
+            detail = f"found executable: {tier.executable}"
+        else:
+            status = "missing"
+            detail = f"executable not found: {tier.executable}"
+        tiers.append(
+            {
+                "level": tier.level,
+                "name": tier.name,
+                "kind": tier.kind,
+                "cloud": tier.cloud,
+                "status": status,
+                "detail": detail,
+            }
+        )
+
+    report = {
+        "mode": "doctor",
+        "config": str(config.source) if config.source else None,
+        "tiers": tiers,
+        "missing_cli_tiers": sum(t["status"] == "missing" for t in tiers),
+        "called_backends": False,
+    }
+    if as_json:
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 0
+
+    print(f"Config: {report['config']}")
+    for tier in tiers:
+        location = "cloud" if tier["cloud"] else "local"
+        print(
+            f"[{tier['status']}] tier {tier['level']} {tier['name']} "
+            f"({tier['kind']}, {location}) — {tier['detail']}"
+        )
+    if report["missing_cli_tiers"]:
+        print("Remove missing CLI tiers from tierlane.toml or install those commands.")
+    print("No backend was called.")
     return 0
 
 
@@ -200,6 +258,13 @@ def main(argv: list[str] | None = None) -> int:
     raw_args = list(sys.argv[1:] if argv is None else argv)
     if raw_args and raw_args[0] == "init":
         return _init_config(build_init_parser().parse_args(raw_args[1:]))
+    if raw_args and raw_args[0] == "doctor":
+        doctor_args = build_doctor_parser().parse_args(raw_args[1:])
+        try:
+            return _doctor(load_config(doctor_args.config), doctor_args.json)
+        except ConfigError as exc:
+            print(f"[tierlane] config error: {exc}", file=sys.stderr)
+            return 3
 
     args = build_parser().parse_args(raw_args)
 

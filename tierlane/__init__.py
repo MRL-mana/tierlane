@@ -21,7 +21,7 @@ from .guards import (
 )
 from .router import Result, pick_tier, run, run_with_escalation, should_hold
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "__version__",
